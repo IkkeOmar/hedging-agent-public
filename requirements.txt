@@ -1,0 +1,51 @@
+# ---------------------------------------------------------------- core
+numpy>=1.26
+pandas>=2.1
+scipy>=1.11
+requests>=2.31
+yfinance>=0.2.40
+ccxt>=4.2
+
+# ---------------------------------------------------------------- tests
+pytest>=8.0
+
+# --------------------------------------------- validation references
+# None of these are imported by the library at runtime. They exist so that
+# every statistic which can REJECT a strategy is checked against an
+# independent implementation, in the other direction from the usual one
+# (trusting our own tests). Each dependency below caught or confirmed
+# something real.
+#
+# ml4t-diagnostic (MIT, https://github.com/ml4t/diagnostic)
+#   Independent DSR / PBO / FDR / HAC. Cross-checking against it exposed a
+#   downward bias in our own PBO (rank scaled by (rank-1)/N instead of
+#   rank/(N+1)), which flattered every candidate. Used by
+#   tests/test_crossvalidation.py.
+#   NOTE: imports as `ml4t`, not `ml4t_diagnostic`.
+ml4t-diagnostic>=0.1.9
+
+# statsmodels -- the Newey-West HAC t-stat in stats.py is checked against
+#   OLS(cov_type="HAC") to 1e-9 across seeds and lag choices.
+statsmodels>=0.15
+
+# quantstats -- volatility_drag in benchmarks.py is cross-checked against
+#   quantstats cagr / avg_return / volatility (agree to ~4e-7) and compsum.
+#   Also the source that disproved our false claim about annualisation
+#   conventions; see docs/LITERATURE.md section 10.
+quantstats>=0.0.86
+
+# arch -- conditional volatility (GARCH family). Available for the regime
+#   detector's volatility inputs; not yet wired into the pipeline.
+arch>=8.0
+
+# ---------------------------------------------------------------- optional
+# Portfolio construction / constraint layer. Not used yet; recorded because
+# hedge sizing is a constrained-optimisation problem and these are the
+# credible implementations of it.
+#
+# pyportfolioopt   efficient frontier, Black-Litterman, HRP   (6.1k stars)
+# riskfolio-lib    100+ risk models, hierarchical clustering    (4.6k stars)
+# skfolio          scikit-learn-native portfolio optimisation (2.5k stars)
+#
+# purgedcv         purged + combinatorial cross-validation with DSR built in
+#                  (a second independent DSR reference)

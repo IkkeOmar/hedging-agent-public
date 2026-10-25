@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.env
+*.env
+# cached market data and sweep artifacts are regenerable and large
+data/cache/
+*.parquet
+sweep_out/
+runs/
+*.log
+.DS_Store
+# Editable installs write their metadata here
+*.egg-info/

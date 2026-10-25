@@ -1,0 +1,102 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hedging-agent"
+version = "0.1.0"
+description = "A research harness for portfolio hedging: candidate strategies, a fail-closed promotion gate, and a decision layer you can swap."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "hedging-agent contributors" }]
+keywords = [
+  "hedging",
+  "risk",
+  "backtesting",
+  "walk-forward",
+  "portfolio",
+  "deflated-sharpe",
+  "pbo",
+]
+classifiers = [
+  "Intended Audience :: Education",
+  "Intended Audience :: Financial and Insurance Industry",
+  "Programming Language :: Python :: 3",
+  "Topic :: Office/Business :: Financial :: Investment",
+]
+
+# The runtime dependencies are deliberately LEAN. The evaluation libraries
+# (skfolio, purgedcv, statsmodels, scikit-learn, cvxpy) are imported LAZILY,
+# inside the functions that use them, so the core package installs and runs
+# with numpy/pandas/scipy/pyyaml alone. The test suite exercises those
+# functions, so `dev` needs all of them.
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.1",
+  "scipy>=1.11",
+]
+
+[project.optional-dependencies]
+# Live market data. NOT needed for the default path: the committed price
+# fixtures under hedging_agent/fixtures/ are what the documented commands
+# read, and they need no network and no key.
+market-data = [
+  "yfinance>=0.2.40",
+  "ccxt>=4.2",
+]
+# Optional LLM candidate generators. The deterministic template bank is the
+# default path and needs neither a key nor a network.
+llm = [
+  "anthropic>=0.40",
+  "requests>=2.31",
+]
+# Figures.
+plots = ["matplotlib>=3.7"]
+# The test suite, plus the independent implementations every statistic that
+# can REJECT a strategy is checked against.
+dev = [
+  "pytest>=8.0",
+  # tomllib is in the standard library from 3.11. On 3.10 the backport
+  # provides the same API, and two tests read pyproject.toml with it.
+  # Without this the suite cannot even COLLECT on the declared floor.
+  "tomli>=2.0; python_version < '3.11'",
+  # ml4t-diagnostic declares requires-python >=3.12,<3.15. It is the
+  # independent implementation our statistics are checked against, so on an
+  # older interpreter the cross-validation tests SKIP -- they do not
+  # vanish, and the collected test count does not change. The marker says
+  # what is true: this dependency exists only where it can exist. Without
+  # it, `pip install -e ".[dev]"` fails outright on 3.11, and a reader on
+  # a supported interpreter cannot install the project at all.
+  "ml4t-diagnostic>=0.1.9; python_version >= '3.12' and python_version < '3.15'",
+  "statsmodels>=0.15",
+  "quantstats>=0.0.86",
+  "arch>=8.0",
+  "skfolio>=1.9.0",
+  "purgedcv>=0.1.0",
+  "scikit-learn>=1.6.0",
+  "cvxpy>=1.5.3",
+]
+
+[project.scripts]
+# Both of these resolve to modules that EXIST. An entry point that
+# resolves to nothing installs a console script that dies on first use,
+# which looks like an installed command and fails when it is touched.
+hedge-research = "hedging_agent.cli:main"
+hedge-agent = "hedging_agent.cli:agent_main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["hedging_agent*"]
+
+[tool.setuptools.package-data]
+# The committed price fixtures are DATA the package needs at runtime. They
+# are what makes the default path work with the network disabled, and they
+# are what lets the published numbers be reproduced exactly.
+hedging_agent = ["fixtures/*.csv", "py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]

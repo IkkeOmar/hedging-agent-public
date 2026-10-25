@@ -1,0 +1,216 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  # Lets anyone re-run the suite on demand from the Actions tab, without
+  # pushing a commit. Useful for a public repository where a reader wants
+  # to see the result on their own fork.
+  workflow_dispatch:
+
+# The workflow only needs to read the repository.
+permissions:
+  contents: read
+
+# A new push to the same ref supersedes the run in flight.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: pytest (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      # Report every version's result, even if one of them fails.
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    env:
+      # Artefacts go to the runner's scratch directory, so a CI run never
+      # leaves untracked files behind in the checkout.
+      CI_ARTIFACTS: $RUNNER_TEMP/hedge-lab-ci
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install the package and the test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # The package is installed, not just copied, so the entry points
+          # and the package data (the committed price fixtures) resolve the
+          # same way they do for a reader who clones and installs.
+          python -m pip install -e ".[dev]"
+
+      - name: Run the test suite
+        run: python -m pytest tests/ -q
+
+      - name: Run the research entry point, with NO network and NO key
+        # The default path reads the committed price fixtures. It needs no
+        # network, no API key, no account. This is the promise the README
+        # makes, and this step is where it is checked.
+        #
+        # The gate REJECTS every universe, so this exits 1. That is a
+        # RESULT, not a failure: the harness is supposed to say no. The
+        # report is written either way, and the next step asserts that.
+        continue-on-error: true
+        run: |
+          python scripts/run_research.py \
+            --all \
+            --out "$CI_ARTIFACTS/outputs"
+
+      - name: Assert the sweeps were written
+        # The proof that the entry point really ran end to end. The gate
+        # rejecting is the expected outcome; the ARTEFACT must exist
+        # regardless.
+        run: |
+          for u in us_equities mixed crypto; do
+            test -f "$CI_ARTIFACTS/outputs/sweep_${u}_swing.json"
+            test -s "$CI_ARTIFACTS/outputs/sweep_${u}_swing.json"
+          done
+          python - <<'PY'
+          import json, os, sys
+          out = os.environ["CI_ARTIFACTS"] + "/outputs"
+          bad = []
+          for u in ("us_equities", "mixed", "crypto"):
+              d = json.load(open(f"{out}/sweep_{u}_swing.json"))
+              gate = d.get("gate") or {}
+              # The gate is a dict: {passed, verdict, checks, failed_checks}.
+              # The verdict strings are uppercase.
+              if gate.get("verdict") not in ("PROMOTED", "REJECTED"):
+                  bad.append(f"{u}: verdict={gate.get('verdict')!r}")
+              if not isinstance(gate.get("checks"), list):
+                  bad.append(f"{u}: checks is not a list")
+              if not isinstance(gate.get("failed_checks"), list):
+                  bad.append(f"{u}: failed_checks is not a list")
+          if bad:
+              print("the gate payload is not the documented shape:")
+              for b in bad:
+                  print("  ", b)
+              sys.exit(1)
+          print("all three sweeps carry a well-formed gate payload")
+          PY
+
+      - name: Check the research cards are current
+        # The cards are GENERATED from the sweep JSONs, so they cannot drift
+        # from them. This step regenerates them into a scratch directory
+        # and diffs against the committed ones.
+        run: |
+          python scripts/make_cards.py --check
+
+      - name: Check the README's generated tables are current
+        # The README's results tables are GENERATED from the sweep
+        # artefacts, the way the research cards are. A hand-written table
+        # of numbers drifts from the artefact it describes -- this one did,
+        # and it shipped. Generating it means the question is asked once, at
+        # build time, instead of every time someone edits the README.
+        run: |
+          python scripts/make_readme_tables.py --check
+
+      - name: The declared Python floor is real
+        # pyproject.toml promises `requires-python = ">=3.10"`. A promise
+        # nobody checks is just a number in a file, so this entry compiles
+        # every file in the tree with the OLDEST supported interpreter.
+        #
+        # The failure it catches: PEP 701 (Python 3.12) allows a backslash
+        # inside an f-string's expression part. Written on 3.12 it looks
+        # fine; on 3.10 it is a SyntaxError, and the whole suite dies at
+        # collection rather than on one test.
+        #
+        # `ast.parse(feature_version=...)` does NOT catch this -- CPython's
+        # parser does not version its f-string handling -- so a real 3.10
+        # interpreter does the work. See tests/test_supported_python_parses.py.
+        if: matrix.python-version == '3.10'
+        run: python -m pytest tests/test_supported_python_parses.py -q -rs
+
+      - name: Audit the documented claims
+        # Every number in the reader-facing documents is checked against a
+        # live artefact, every referenced path against the filesystem, and
+        # every "N tests" against what pytest collects. A number that drifts
+        # out of the documentation fails the build instead of shipping.
+        #
+        # Only on one matrix entry: the audit is a property of the
+        # repository, not of an interpreter.
+        if: matrix.python-version == '3.12'
+        run: python scripts/audit_claims.py
+
+      - name: Prove the suite needs no key and no network
+        # Every optional key is unset, and the whole suite is re-run. If any
+        # test needed a key, or reached the network, it fails here.
+        #
+        # This is the check that makes "no key, no account, no network" a
+        # fact about the repository rather than a claim about it.
+        if: matrix.python-version == '3.12'
+        env:
+          ANTHROPIC_API_KEY: ""
+          OPENAI_API_KEY: ""
+          OPENROUTER_API_KEY: ""
+          JEV_API_KEY: ""
+          TYPESAFE_AI_API_KEY: ""
+        run: python -m pytest tests/ -q
+
+  keyless:
+    name: the documented path needs no key and no network
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install only the CORE dependencies
+        # Deliberately NOT `.[dev]`. This job installs the runtime
+        # dependencies and nothing else, so if the default path secretly
+        # needs a test-only or optional package, it fails here.
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+
+      - name: Run the documented command with no key and no network
+        # The gate rejects, so the exit code is 1. That is the expected
+        # result and the point of the whole repository.
+        env:
+          ANTHROPIC_API_KEY: ""
+          OPENAI_API_KEY: ""
+          OPENROUTER_API_KEY: ""
+          JEV_API_KEY: ""
+          TYPESAFE_AI_API_KEY: ""
+        run: |
+          python scripts/run_research.py \
+            --all \
+            --out "$RUNNER_TEMP/hedge-lab-ci/outputs" \
+            --json
+        continue-on-error: true
+
+      - name: Assert the exit code was 1, and the sweeps were written
+        # Exit 1 means "the gate rejected", which is a RESULT. Exit 0 would
+        # mean the gate passed, which would be a false claim about this
+        # repository. Exit 2 would mean a usage error.
+        run: |
+          set -e
+          python scripts/run_research.py \
+            --all \
+            --out "$RUNNER_TEMP/hedge-lab-ci/outputs" > /dev/null 2>&1 && rc=0 || rc=$?
+          echo "run_research.py exited $rc"
+          if [ "$rc" != "1" ]; then
+            echo "expected exit 1 (the promotion gate rejects); got $rc"
+            exit 1
+          fi
+          for u in us_equities mixed crypto; do
+            test -s "$RUNNER_TEMP/hedge-lab-ci/outputs/sweep_${u}_swing.json"
+          done
+          echo "the gate rejected, and the artefacts were written"

@@ -1,0 +1,527 @@
+{
+  "universe": "mixed",
+  "timeframe": "swing",
+  "n_trials": 48,
+  "best_spec": {
+    "name": "drawdown_ladder",
+    "description": "A three-rung ladder that adds hedge depth as the drawdown deepens.",
+    "failure_mode": "a slow bleed that shallow overlays never catch",
+    "target_vol": 0.28145102525135857,
+    "vol_gamma": 0.8702684635630322,
+    "vol_cap_mult": 1.6335014932913106,
+    "dd_trigger": -0.03548788605752887,
+    "dd_full": -0.1338262946450332,
+    "dd_max_mult": 1.459074430651671,
+    "consensus_required": 0.5724718630136857,
+    "veto_on_expansion": true,
+    "max_hedge_fraction": 0.3295935932277204,
+    "max_daily_turnover": 0.3366003088910879,
+    "hedge_instrument": "short_beta",
+    "commission_bps": 1.0,
+    "spread_bps": 2.0,
+    "borrow_bps_annual": 10.0,
+    "rebalance_every_bars": 1,
+    "search_space": {
+      "target_vol": [
+        0.1,
+        0.3
+      ],
+      "vol_gamma": [
+        0.1,
+        1.2
+      ],
+      "vol_cap_mult": [
+        1.5,
+        3.5
+      ],
+      "dd_trigger": [
+        -0.02,
+        -0.1
+      ],
+      "dd_full": [
+        -0.08,
+        -0.25
+      ],
+      "dd_max_mult": [
+        1.2,
+        3.0
+      ],
+      "consensus_required": [
+        0.34,
+        0.84
+      ],
+      "max_hedge_fraction": [
+        0.3,
+        0.9
+      ],
+      "max_daily_turnover": [
+        0.08,
+        0.4
+      ]
+    }
+  },
+  "best_metrics": {
+    "sharpe": 0.3838,
+    "sharpe_unhedged": 0.4136,
+    "sortino": 0.3881,
+    "max_dd_hedged": -0.5049,
+    "max_dd_unhedged": -0.5183,
+    "avg_hedge": 0.3001,
+    "annualised_turnover": 28.345
+  },
+  "dsr": {
+    "dsr": 1.0,
+    "observed_sharpe": 0.3838,
+    "expected_max_sharpe": 0.0526,
+    "n_trials": 48,
+    "n_obs": 1826,
+    "skew": -0.0987,
+    "raw_kurtosis": 6.9509,
+    "trials_variance": 0.00054093,
+    "note": "DSR is P(Sharpe > expected max Sharpe under null | n_trials). raw_kurtosis (normal = 3.0); trials_variance is in the same frequency as the Sharpe."
+  },
+  "pbo": {
+    "pbo": 0.9571,
+    "n_combinations": 70,
+    "n_configs": 48,
+    "n_observations": 1826,
+    "n_splits": 8,
+    "median_oos_win_prob": 0.0408,
+    "note": "PBO < 0.5 means the in-sample winner tends to stay above median OOS; near 0.5 the selection procedure is a coin flip"
+  },
+  "walk_forward": {
+    "folds": [
+      {
+        "fold": 0,
+        "train_start": "2021-10-25",
+        "train_end": "2022-03-09",
+        "test_start": "2022-03-11",
+        "test_end": "2022-10-24",
+        "is_sharpe": -1.0568,
+        "oos_sharpe": -1.1207,
+        "oos_return": -0.274574,
+        "oos_trades": 228,
+        "accepted": false
+      },
+      {
+        "fold": 1,
+        "train_start": "2022-06-10",
+        "train_end": "2022-10-23",
+        "test_start": "2022-10-25",
+        "test_end": "2023-06-09",
+        "is_sharpe": -0.7232,
+        "oos_sharpe": 0.9294,
+        "oos_return": 0.18197,
+        "oos_trades": 228,
+        "accepted": true
+      },
+      {
+        "fold": 2,
+        "train_start": "2023-01-24",
+        "train_end": "2023-06-08",
+        "test_start": "2023-06-10",
+        "test_end": "2024-01-23",
+        "is_sharpe": 0.5197,
+        "oos_sharpe": 2.1256,
+        "oos_return": 0.340133,
+        "oos_trades": 228,
+        "accepted": true
+      },
+      {
+        "fold": 3,
+        "train_start": "2023-09-09",
+        "train_end": "2024-01-22",
+        "test_start": "2024-01-24",
+        "test_end": "2024-09-07",
+        "is_sharpe": 3.4419,
+        "oos_sharpe": 1.11,
+        "oos_return": 0.189535,
+        "oos_trades": 228,
+        "accepted": true
+      },
+      {
+        "fold": 4,
+        "train_start": "2024-04-24",
+        "train_end": "2024-09-06",
+        "test_start": "2024-09-08",
+        "test_end": "2025-04-23",
+        "is_sharpe": -0.2125,
+        "oos_sharpe": 0.7793,
+        "oos_return": 0.130583,
+        "oos_trades": 228,
+        "accepted": true
+      },
+      {
+        "fold": 5,
+        "train_start": "2024-12-08",
+        "train_end": "2025-04-22",
+        "test_start": "2025-04-24",
+        "test_end": "2025-12-07",
+        "is_sharpe": -0.7968,
+        "oos_sharpe": 1.2124,
+        "oos_return": 0.193228,
+        "oos_trades": 228,
+        "accepted": true
+      },
+      {
+        "fold": 6,
+        "train_start": "2025-07-24",
+        "train_end": "2025-12-06",
+        "test_start": "2025-12-08",
+        "test_end": "2026-07-23",
+        "is_sharpe": 0.0432,
+        "oos_sharpe": -0.4474,
+        "oos_return": -0.082131,
+        "oos_trades": 228,
+        "accepted": false
+      },
+      {
+        "fold": 7,
+        "train_start": "2026-03-09",
+        "train_end": "2026-07-22",
+        "test_start": "2026-07-24",
+        "test_end": "2026-10-24",
+        "is_sharpe": 0.2217,
+        "oos_sharpe": 1.5369,
+        "oos_return": 0.085536,
+        "oos_trades": 93,
+        "accepted": true
+      }
+    ],
+    "n_folds": 8,
+    "aggregate_sharpe": 0.5509,
+    "positive_fold_ratio": 0.75,
+    "mean_is_sharpe": 0.1797,
+    "mean_oos_sharpe": 0.7657,
+    "max_is_oos_decay": 11.3565
+  },
+  "regime_stats": {
+    "crash": {
+      "n_bars": 122,
+      "sharpe": -4.055,
+      "sharpe_se": 1.437,
+      "significant": true,
+      "total_return": -0.408215,
+      "max_dd": -0.4031,
+      "mean": -0.004157
+    },
+    "crash_rebound": {
+      "n_bars": 9,
+      "sharpe": null,
+      "sharpe_se": 5.292,
+      "significant": false,
+      "total_return": 0.288446,
+      "max_dd": 0.0,
+      "mean": 0.02881
+    },
+    "distribution": {
+      "n_bars": 392,
+      "sharpe": -3.0695,
+      "sharpe_se": 0.802,
+      "significant": true,
+      "total_return": -0.584305,
+      "max_dd": -0.5836,
+      "mean": -0.002174
+    },
+    "expansion": {
+      "n_bars": 167,
+      "sharpe": 5.7705,
+      "sharpe_se": 1.228,
+      "significant": true,
+      "total_return": 0.608479,
+      "max_dd": -0.0568,
+      "mean": 0.002881
+    },
+    "high_vol_chop": {
+      "n_bars": 602,
+      "sharpe": 1.8966,
+      "sharpe_se": 0.647,
+      "significant": true,
+      "total_return": 1.119759,
+      "max_dd": -0.1019,
+      "mean": 0.001308
+    },
+    "trend_up": {
+      "n_bars": 215,
+      "sharpe": 5.8658,
+      "sharpe_se": 1.083,
+      "significant": true,
+      "total_return": 1.207787,
+      "max_dd": -0.0397,
+      "mean": 0.003741
+    }
+  },
+  "gate": {
+    "passed": false,
+    "verdict": "REJECTED",
+    "checks": [
+      {
+        "check": "min_sharpe",
+        "value": 0.3838,
+        "threshold": 0.6,
+        "pass": false,
+        "detail": ""
+      },
+      {
+        "check": "min_dsr",
+        "value": 1.0,
+        "threshold": 0.9,
+        "pass": true,
+        "detail": "P(true edge | n_trials disclosed)"
+      },
+      {
+        "check": "max_pbo",
+        "value": 0.9571,
+        "threshold": 0.3,
+        "pass": false,
+        "detail": "<0.5 = selection generalises; near 0.5 = coin flip"
+      },
+      {
+        "check": "min_folds",
+        "value": 8,
+        "threshold": 6,
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "positive_fold_ratio",
+        "value": 0.75,
+        "threshold": 0.6,
+        "pass": true,
+        "detail": ""
+      },
+      {
+        "check": "max_is_oos_decay",
+        "value": 11.3565,
+        "threshold": 0.5,
+        "pass": false,
+        "detail": ""
+      },
+      {
+        "check": "nonzero_action_ratio",
+        "value": 0.05707,
+        "threshold": 0.02,
+        "pass": true,
+        "detail": "a hedge strategy that never hedges has not been tested"
+      },
+      {
+        "check": "min_regimes_positive",
+        "value": 3,
+        "threshold": 2,
+        "pass": true,
+        "detail": "must work in more than one regime"
+      },
+      {
+        "check": "beats_simple_benchmark",
+        "value": 0.0,
+        "threshold": "> 0 vs risk-matched constant",
+        "pass": false,
+        "detail": "vs a constant hedge at ratio 0.1993 carrying the same realised vol; Sharpe gap 0.0, drawdown gap -0.0118. Maguire 2026: the benchmark is where the result lives"
+      },
+      {
+        "check": "significance_t",
+        "value": -1.021,
+        "threshold": 3.0,
+        "pass": false,
+        "detail": "Newey-West t on the hedged-minus-unhedged mean return; Harvey/Liu/Zhu (2016) hurdle is t>3.0, not 2.0"
+      }
+    ],
+    "failed_checks": [
+      "min_sharpe",
+      "max_pbo",
+      "max_is_oos_decay",
+      "beats_simple_benchmark",
+      "significance_t"
+    ]
+  },
+  "action_ratio": 0.0571,
+  "veto_ratio": 0.0896,
+  "zero_hedge_ratio": 0.0896,
+  "top_candidates": [
+    {
+      "name": "drawdown_ladder",
+      "sharpe": 0.3838,
+      "avg_hedge": 0.3001
+    },
+    {
+      "name": "cash_buffer_preference",
+      "sharpe": 0.3779,
+      "avg_hedge": 0.2996
+    },
+    {
+      "name": "horizon_weighted_overlay",
+      "sharpe": 0.3705,
+      "avg_hedge": 0.3831
+    },
+    {
+      "name": "vol_scaled_beta_hedge",
+      "sharpe": 0.3686,
+      "avg_hedge": 0.3195
+    },
+    {
+      "name": "asymmetric_fast_on_slow_off",
+      "sharpe": 0.3565,
+      "avg_hedge": 0.3899
+    }
+  ],
+  "hedge": {
+    "round_trip_cost_bps": 3.0,
+    "borrow_bps_annual": 10.0,
+    "hedge_proxy": "SH",
+    "hedge_side": 1.0,
+    "hedge_side_label": "LONG (instrument already inverse to portfolio)",
+    "hedge_corr_to_portfolio": -0.6391,
+    "portfolio_cols": [
+      "SPY",
+      "QQQ",
+      "IWM",
+      "EFA",
+      "TLT",
+      "GLD",
+      "BTC-USD",
+      "ETH-USD",
+      "SOL-USD"
+    ],
+    "correlation_warning": null
+  },
+  "benchmarks": {
+    "table": {
+      "buy_and_hold": {
+        "sharpe": 0.4136,
+        "sortino": 0.4166,
+        "max_dd": -0.5183,
+        "cagr": 0.0698,
+        "n_bars": 1826
+      },
+      "constant_hedge_50": {
+        "sharpe": 0.3573,
+        "sortino": 0.3685,
+        "max_dd": -0.4571,
+        "cagr": 0.0505,
+        "n_bars": 1826
+      },
+      "trend_follow_200": {
+        "sharpe": 1.2293,
+        "sortino": 1.319,
+        "max_dd": -0.4405,
+        "cagr": 0.2655,
+        "n_bars": 1826
+      },
+      "drawdown_control_10": {
+        "sharpe": 0.5344,
+        "sortino": 0.5539,
+        "max_dd": -0.4414,
+        "cagr": 0.0889,
+        "n_bars": 1826
+      },
+      "inverse_vol_20": {
+        "sharpe": 0.3731,
+        "sortino": 0.3851,
+        "max_dd": -0.4464,
+        "cagr": 0.0537,
+        "n_bars": 1826
+      },
+      "risk_matched_constant": {
+        "sharpe": 0.3838,
+        "sortino": 0.3901,
+        "max_dd": -0.4931,
+        "cagr": 0.0597,
+        "n_bars": 1826
+      },
+      "regime_gated_overlay": {
+        "sharpe": 0.3838,
+        "sortino": 0.3881,
+        "max_dd": -0.5049,
+        "cagr": 0.0596,
+        "n_bars": 1826
+      }
+    },
+    "verdict": {
+      "beats_best_simple_on_sharpe": false,
+      "best_simple_sharpe": 1.2293,
+      "candidate_sharpe": 0.3838,
+      "sharpe_edge_over_best_simple": -0.8455,
+      "shallowest_dd_anywhere": -0.5183,
+      "has_shallowest_dd": true,
+      "n_benchmarks_beaten_on_sharpe": 2,
+      "n_benchmarks": 6
+    },
+    "candidate": "regime_gated_overlay",
+    "risk_matched": {
+      "hedge_ratio": 0.1993,
+      "candidate_vol": 0.013016,
+      "matched_vol": 0.013016,
+      "timing_sharpe_gap": 0.0,
+      "timing_dd_gap": -0.0118,
+      "note": "candidate vs a constant hedge carrying identical realised vol. Isolates timing from exposure. Source: Maguire (2026), docs/LITERATURE.md section 7"
+    },
+    "vol_drag": {
+      "candidate": {
+        "cagr": 0.059645,
+        "cagr_log": 0.057934,
+        "power_cagr": 0.059645,
+        "arith_mean": 0.079298,
+        "vol": 0.206621,
+        "drag": 0.021364,
+        "drag_sigma2_over_2": 0.021346,
+        "drag_residual": 1.8e-05,
+        "drag_pct_of_mean": 0.2694,
+        "n_obs": 1826,
+        "convention": "drag = arith_mean - cagr_log (arithmetic minus the LOGARITHMIC mean; the mu - sigma^2/2 identity holds only in log space). cagr = exp(cagr_log)-1 and power_cagr = prod(1+r)**(1/years)-1 are algebraically IDENTICAL and are both reported for cross-checking against QuantStats / empyrical.",
+        "interpretation": "drag = arith_mean - cagr_log, i.e. the volatility tax. Positive means variance cost compounding. Reducing vol cuts it ~quadratically, the legitimate edge-free channel through which an overlay can help."
+      },
+      "buy_and_hold": {
+        "cagr": 0.069824,
+        "cagr_log": 0.067494,
+        "power_cagr": 0.069824,
+        "arith_mean": 0.092506,
+        "vol": 0.223685,
+        "drag": 0.025011,
+        "drag_sigma2_over_2": 0.025018,
+        "drag_residual": -6e-06,
+        "drag_pct_of_mean": 0.2704,
+        "n_obs": 1826,
+        "convention": "drag = arith_mean - cagr_log (arithmetic minus the LOGARITHMIC mean; the mu - sigma^2/2 identity holds only in log space). cagr = exp(cagr_log)-1 and power_cagr = prod(1+r)**(1/years)-1 are algebraically IDENTICAL and are both reported for cross-checking against QuantStats / empyrical.",
+        "interpretation": "drag = arith_mean - cagr_log, i.e. the volatility tax. Positive means variance cost compounding. Reducing vol cuts it ~quadratically, the legitimate edge-free channel through which an overlay can help."
+      },
+      "risk_matched_constant": {
+        "cagr": 0.059706,
+        "cagr_log": 0.057992,
+        "power_cagr": 0.059706,
+        "arith_mean": 0.079332,
+        "vol": 0.206621,
+        "drag": 0.021341,
+        "drag_sigma2_over_2": 0.021346,
+        "drag_residual": -5e-06,
+        "drag_pct_of_mean": 0.269,
+        "n_obs": 1825,
+        "convention": "drag = arith_mean - cagr_log (arithmetic minus the LOGARITHMIC mean; the mu - sigma^2/2 identity holds only in log space). cagr = exp(cagr_log)-1 and power_cagr = prod(1+r)**(1/years)-1 are algebraically IDENTICAL and are both reported for cross-checking against QuantStats / empyrical.",
+        "interpretation": "drag = arith_mean - cagr_log, i.e. the volatility tax. Positive means variance cost compounding. Reducing vol cuts it ~quadratically, the legitimate edge-free channel through which an overlay can help."
+      },
+      "drag_saved_vs_bnh": 0.003647,
+      "vol_reduction": 0.017064,
+      "cagr_gain_vs_bnh": -0.010179,
+      "note": "drag ~ sigma^2/2, so a genuine vol cut pays WITHOUT any predictive edge. This is the only defensible positive channel for a vol-scaling overlay. It is still not free: de-levering through an inverse hedge costs arithmetic mean. See docs/LITERATURE.md section 10."
+    },
+    "source": "benchmarks.py; see docs/LITERATURE.md sections 1, 7 and 10"
+  },
+  "significance": {
+    "mean_diff": -5.24114e-05,
+    "t_stat": -1.021,
+    "se": 5.13353e-05,
+    "n_obs": 1826,
+    "lags": 7,
+    "hac": "Newey-West Bartlett",
+    "sharpe_hedged": 0.3838,
+    "sharpe_unhedged": 0.4136,
+    "sharpe_gap": -0.0298
+  },
+  "window": {
+    "start": "2021-10-24",
+    "end": "2026-10-24",
+    "n_bars": 1827,
+    "years": 5.0,
+    "requested_period": "5y",
+    "note": ""
+  }
+}

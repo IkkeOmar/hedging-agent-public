@@ -1,0 +1,36 @@
+# Normalise line endings so the committed bytes are the same on every
+# machine. Without this, a file written on Windows lands as CRLF and the
+# same file written on Linux lands as LF: the content is identical and the
+# bytes differ, which shows up as "the whole file changed" after a reader
+# regenerates it.
+* text=auto eol=lf
+
+# The PUBLISHED ARTEFACTS are not line-ending normalised.
+#
+# A reader downloads a committed sweep, regenerates it, and compares the
+# bytes. If git normalises the line endings on the way in, the file in
+# the repository and the file the reader regenerates differ by a single
+# byte pattern -- and `git status` cannot see the difference, because
+# normalisation is exactly what git does before it decides.
+#
+# These files are written with explicit LF (`newline="\n"`) so the
+# bytes are the same either way. Marking them as -text makes that a
+# property of the repository rather than of the machine that happened to
+# write them, and it means a CRLF version is a real diff instead of an
+# invisible one.
+hedging_agent/fixtures/*.csv -text
+outputs/*.json -text
+cards/*.md -text
+
+# Binary files that must never be line-ending translated.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.parquet binary
+*.xlsx binary
+*.docx binary
+*.pptx binary
