@@ -73,8 +73,8 @@ Live US-equities / swing sweep, 6 candidates x 8 trials, 5y. The gate is
 **fail-closed** and it says no:
 
 All figures below are **net of transaction costs** (3bps round trip + 10bps
-annual borrow). Every Sharpe reported before commit `e507070`-era sweeps was
-gross. The cost model was configured and printed but never applied. See
+annual borrow). Every Sharpe reported before the cost fix was gross. The
+cost model was configured and printed but never applied. See
 `docs/LITERATURE.md` section 14.
 
 <!-- BEGIN GENERATED: gate-table -->
@@ -364,7 +364,9 @@ exist, did the reduction pay for itself, does it hold up out of sample.
 
 ## Licence and prior art
 
-Private repository, not yet licensed for redistribution.
+MIT. See LICENSE.
+
+Built by the [TextToQuant](https://texttoquant.com) team.
 
 Prior art consulted and cross-validated against:
 

@@ -17,8 +17,7 @@ Three columns, one protocol:
 
 `before` needs a reference implementation of the old form, because the old
 form is not in this repository any more. It is reproduced here, verbatim,
-from the commit that fixed it (``e507070``, "Fix PBO bias, crypto
-annualisation, and stop hiding tracebacks"). The old form was:
+from the version that shipped before the fix. The old form was:
 
     theta = (rank_of_best - 1.0) / n_cfg_f - 0.5
 
