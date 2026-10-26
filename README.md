@@ -41,7 +41,7 @@ Newey-West HAC t > 3.0  (Harvey/Liu/Zhu 2016)
 risk-matched benchmark  (Maguire 2026)
         |
         v  only survivors
-JEV adjudicates live state: veto / scale / escalate / abstain
+The decision layer adjudicates live state: veto / scale / escalate / abstain
 ```
 
 Everything above the decision layer is deliberately boring, inspectable, and
@@ -376,9 +376,6 @@ Prior art consulted and cross-validated against:
 - [Riskfolio-Lib](https://github.com/dcajasn/Riskfolio-Lib), [PyPortfolioOpt](https://github.com/pyportfolio/PyPortfolioOpt), [skfolio](https://github.com/skfolio/skfolio): portfolio construction and constraint layers.
 - [arch](https://github.com/bashtage/arch): conditional volatility models.
 - [purgedcv](https://github.com/eslazarev/purged-cross-validation): purged and combinatorial CV.
-- [JEV](https://www.jevtypesafeai.com/docs) (TypeSafe AI): the decision-model
-  interface this project is built to feed. No key required to run anything
-  here.
 
 `docs/LITERATURE.md` carries the primary sources behind every threshold,
 including the places where this implementation disagreed with them and was
